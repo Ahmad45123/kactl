@@ -9,8 +9,11 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 
 int main() {
-	ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
-	freopen("input.txt","r",stdin);
+  ios_base::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+  freopen("input.txt","r",stdin);
   freopen("output.txt","w",stdout);
 
+
+  cerr << "Run time: " << fixed << setprecision(3) << (double)clock() / CLOCKS_PER_SEC << "s" << endl;
+  return 0;
 }
