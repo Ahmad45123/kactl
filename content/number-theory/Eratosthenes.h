@@ -9,14 +9,20 @@
  */
 #pragma once
 
-const int MAX_PR = 5'000'000;
-bitset<MAX_PR> isprime;
-vi eratosthenesSieve(int lim) {
-	isprime.set(); isprime[0] = isprime[1] = 0;
-	for (int i = 4; i < lim; i += 2) isprime[i] = 0;
-	for (int i = 3; i*i < lim; i += 2) if (isprime[i])
-		for (int j = i*i; j < lim; j += i*2) isprime[j] = 0;
-	vi pr;
-	rep(i,2,lim) if (isprime[i]) pr.push_back(i);
-	return pr;
+const int N = 1e6+5;
+int prime[N];
+void sieve(){
+    for(int i=2; i<N; i++){
+        if(prime[i])continue;
+        prime[i] = i;
+        for(int j=i*i; j<N; j+=i)
+            prime[j]=i;
+    }
+    //getting prime factors of the number!
+    for(int i=1; i<N; i++){
+        int x = i;
+        while(x != 1){
+            x /= prime[x];
+        }
+    }
 }

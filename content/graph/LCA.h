@@ -3,34 +3,57 @@
  * Date: 2020-02-20
  * License: CC0
  * Source: Folklore
- * Description: Data structure for computing lowest common ancestors in a tree
- * (with 0 as root). C should be an adjacency list of the tree, either directed
- * or undirected.
+ * Description: Data structure for computing lowest common ancestors in a tree.
  * Time: $O(N \log N + Q)$
  * Status: stress-tested
  */
 #pragma once
 
-#include "../data-structures/RMQ.h"
+int n, l;
+vector<vector<int>> adj;
 
-struct LCA {
-	int T = 0;
-	vi time, path, ret;
-	RMQ<int> rmq;
+int timer;
+vector<int> tin, tout;
+vector<vector<int>> up;
 
-	LCA(vector<vi>& C) : time(sz(C)), rmq((dfs(C,0,-1), ret)) {}
-	void dfs(vector<vi>& C, int v, int par) {
-		time[v] = T++;
-		for (int y : C[v]) if (y != par) {
-			path.push_back(v), ret.push_back(time[v]);
-			dfs(C, y, v);
-		}
-	}
+void dfs(int v, int p)
+{
+    tin[v] = ++timer;
+    up[v][0] = p;
+    for (int i = 1; i <= l; ++i)
+        up[v][i] = up[up[v][i-1]][i-1];
 
-	int lca(int a, int b) {
-		if (a == b) return a;
-		tie(a, b) = minmax(time[a], time[b]);
-		return path[rmq.query(a, b)];
-	}
-	//dist(a,b){return depth[a] + depth[b] - 2*depth[lca(a,b)];}
-};
+    for (int u : adj[v]) {
+        if (u != p)
+            dfs(u, v);
+    }
+
+    tout[v] = ++timer;
+}
+
+bool is_ancestor(int u, int v)
+{
+    return tin[u] <= tin[v] && tout[u] >= tout[v];
+}
+
+int lca(int u, int v)
+{
+    if (is_ancestor(u, v))
+        return u;
+    if (is_ancestor(v, u))
+        return v;
+    for (int i = l; i >= 0; --i) {
+        if (!is_ancestor(up[u][i], v))
+            u = up[u][i];
+    }
+    return up[u][0];
+}
+
+void preprocess(int root) {
+    tin.resize(n);
+    tout.resize(n);
+    timer = 0;
+    l = ceil(log2(n));
+    up.assign(n, vector<int>(l + 1));
+    dfs(root, root);
+}

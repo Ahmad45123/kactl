@@ -11,26 +11,27 @@
  */
 #pragma once
 
-const ll inf = LLONG_MAX;
-struct Ed { int a, b, w, s() { return a < b ? a : -a; }};
-struct Node { ll dist = inf; int prev = -1; };
-
-void bellmanFord(vector<Node>& nodes, vector<Ed>& eds, int s) {
-	nodes[s].dist = 0;
-	sort(all(eds), [](Ed a, Ed b) { return a.s() < b.s(); });
-
-	int lim = sz(nodes) / 2 + 2; // /3+100 with shuffled vertices
-	rep(i,0,lim) for (Ed ed : eds) {
-		Node cur = nodes[ed.a], &dest = nodes[ed.b];
-		if (abs(cur.dist) == inf) continue;
-		ll d = cur.dist + ed.w;
-		if (d < dest.dist) {
-			dest.prev = ed.a;
-			dest.dist = (i < lim-1 ? d : -inf);
-		}
-	}
-	rep(i,0,lim) for (Ed e : eds) {
-		if (nodes[e.a].dist == -inf)
-			nodes[e.b].dist = -inf;
-	}
+bool bellmanFord(int S){ //O(V*E)
+    int dis[N];
+    for(int i=0; i<N; i++)dis[i] = OO;
+    dis[S] = 0;
+    bool modified = 1;
+    for(int i=0; i<n-1 && modified; i++){
+        modified = 0;
+        for(int j=0; j<n; j++){
+            for(auto h : v[j]){
+                if(dis[j] + h.second < dis[h.first]){
+                    dis[h.first] = dis[j] + h.second;
+                    modified = 1;
+                }
+            }
+        }
+    }
+    bool hasNegativeCycle = 0;
+    for(int i = 0; i<n; i++)
+        for(auto h : v[i])
+            if(dis[i] + h.second < dis[h.first])
+                hasNegativeCycle = 1;
+    return hasNegativeCycle;
 }
+
